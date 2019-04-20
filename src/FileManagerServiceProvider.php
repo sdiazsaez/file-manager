@@ -21,7 +21,7 @@ class FileManagerServiceProvider extends ServiceProvider implements HasInstallab
      * @return void
      */
     public function boot() {
-        $this->loadRoutesFrom(__DIR__ . '/Http/routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         $this->declareMigrationGlobal();
         $this->declareMigrationFileAssets();
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
