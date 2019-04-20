@@ -2,15 +2,18 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Larangular\Installable\Facades\InstallableConfig;
 use Larangular\MigrationPackage\Migration\Schematics;
 
 class CreateFilesTable extends Migration {
     use Schematics;
     protected $name;
+    private $installableConfig;
 
     public function __construct() {
-        $this->name = config('installable.migrations.Larangular\FileManager\FileManagerServiceProvider.file-assets.name');
-        $this->connection = config('installable.migrations.Larangular\FileManager\FileManagerServiceProvider.file-assets.connection');
+        $this->installableConfig = InstallableConfig::config('Larangular\FileManager\FileManagerServiceProvider');
+        $this->connection = $this->installableConfig->getConnection('file_assets');
+        $this->name = $this->installableConfig->getName('file_assets');
     }
 
     /**
@@ -37,7 +40,7 @@ class CreateFilesTable extends Migration {
                 $table->unsignedInteger('uploader_id');
             }
 
-            if (config('installable.migrations.Larangular\FileManager\FileManagerServiceProvider.file-assets.timestamp')) {
+            if ($this->installableConfig->getTimestamp('file_assets')) {
                 $table->timestamps();
             }
         });

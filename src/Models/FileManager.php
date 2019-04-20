@@ -5,6 +5,7 @@ namespace Larangular\FileManager\Models;
 use Faker\Provider\File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Larangular\Installable\Facades\InstallableConfig;
 use Larangular\RoutingController\Model as RoutingModel;
 use Illuminate\Support\Facades\Storage;
 use Larangular\FileManager\Facades\FileManagerController;
@@ -30,9 +31,10 @@ class FileManager extends Model {
 
     public function __construct(array $attributes = []) {
         parent::__construct($attributes);
-        $this->table = config('installable.migrations.Larangular\FileManager\FileManagerServiceProvider.file-assets.name');
-        $this->connection = config('installable.migrations.Larangular\FileManager\FileManagerServiceProvider.file-assets.connection');
-        $this->timestamps = config('installable.migrations.Larangular\FileManager\FileManagerServiceProvider.file-assets.timestamp');
+        $this->installableConfig = InstallableConfig::config('Larangular\FileManager\FileManagerServiceProvider');
+        $this->connection = $this->installableConfig->getConnection('file_assets');
+        $this->table = $this->installableConfig->getName('file_assets');
+        $this->timestamps = $this->installableConfig->getTimestamp('file_assets');
     }
 
     public static function boot() {
@@ -57,16 +59,4 @@ class FileManager extends Model {
         return config('file-manager.route_prefix') . '/file/' . $this->attributes['id'] . '/' . $this->attributes['original_name'];
         //return Storage::disk($this->attributes['disk'])->get($this->attributes['path'] . DIRECTORY_SEPARATOR . $this->attributes['name']);
     }
-    /*
-    public function setFileAttribute(UploadedFile $file) {
-        $this->attributes['file'] = $file;
-
-        $fileResponse = FileManagerController::uploadFile($file, @$this->attributes['disk']);
-        dump([
-            $file,
-            $fileResponse,
-            $this->attributesToArray()
-        ]);
-
-    }*/
 }

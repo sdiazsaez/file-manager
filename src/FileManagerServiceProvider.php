@@ -21,44 +21,15 @@ class FileManagerServiceProvider extends ServiceProvider implements HasInstallab
      * @return void
      */
     public function boot() {
-        $this->loadRoutesFrom(__DIR__ . '/Http/Routes/FileManagerRoutes.php');
-        /*
-        $this->publishes([
-                             __DIR__ . '/../config/file-manager.php' => config_path('file-manager.php')
-                         ], FileManagerServiceProvider::class . '.config');
-
-        $this->publishes([
-                             __DIR__ . '/database/migrations' => database_path('migrations/unidad-fomento')
-                         ], FileManagerServiceProvider::class . '.migrations');
-        $this->publishes([
-                             __DIR__ . '/database/seeds' => database_path('seeds/unidad-fomento'),
-                         ], FileManagerServiceProvider::class . '.seeds');
-        */
-
-        $this->publishesType([
-            __DIR__ . '/../config/file-manager.php' => config_path('file-manager.php'),
-        ], PublishableGroups::Config);
-
-        $this->declareMigration([
-            'name'       => 'file-assets',
-            'connection' => 'mysql',
-            'timestamp'  => true,
-            'local_path' => __DIR__ . '/database/migrations',
-            'publish_path' => database_path('migrations/file-assets')
-        ]);
-
+        $this->loadRoutesFrom(__DIR__ . '/Http/routes/web.php');
+        $this->declareMigrationGlobal();
+        $this->declareMigrationFileAssets();
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
         $this->commands(FileManager::class);
     }
 
-    /**
-     * Register the application services.
-     *
-     * @return void
-     */
     public function register() {
         $this->mergeConfigFrom(__DIR__ . '/../config/file-manager.php', 'file-manager');
-
 
         $this->app->singleton('FileManagerController', function(){
             return new Http\Controllers\FileManager\FileManagerController();
@@ -70,6 +41,28 @@ class FileManagerServiceProvider extends ServiceProvider implements HasInstallab
     }
 
     public function installer(): Installable {
-        return new Installer(FileManagerServiceProvider::class);
+        return new Installer(__CLASS__);
+    }
+
+    private function declareMigrationGlobal(): void {
+        $this->declareMigration([
+            'connection'   => 'mysql',
+            'migrations'   => [
+                'local_path' => base_path() . '/vendor/larangular/file-manager/database/migrations',
+                //__DIR__ . '/../database/migrations',
+            ],
+            'seeds'        => [
+                'local_path' => __DIR__ . '/../database/seeds',
+            ],
+            'seed_classes' => [
+            ],
+        ]);
+    }
+
+    private function declareMigrationFileAssets() {
+        $this->declareMigration([
+            'name'      => 'file_assets',
+            'timestamp' => true,
+        ]);
     }
 }
