@@ -4,6 +4,7 @@ namespace Larangular\FileManager\Models;
 
 use Faker\Provider\File;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\UploadedFile;
 use Larangular\Installable\Facades\InstallableConfig;
 use Larangular\RoutingController\Model as RoutingModel;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Larangular\FileManager\Facades\FileManagerController;
 
 class FileManager extends Model {
-    use RoutingModel;
+    use SoftDeletes, RoutingModel;
 
     protected $table;
     protected $fillable = [
@@ -26,33 +27,31 @@ class FileManager extends Model {
     ];
 
     protected $appends = [
-        'url'
+        'url',
     ];
 
     public function __construct(array $attributes = []) {
         parent::__construct($attributes);
-        $this->installableConfig = InstallableConfig::config('Larangular\FileManager\FileManagerServiceProvider');
-        $this->connection = $this->installableConfig->getConnection('file_assets');
-        $this->table = $this->installableConfig->getName('file_assets');
-        $this->timestamps = $this->installableConfig->getTimestamp('file_assets');
+        $installableConfig = InstallableConfig::config('Larangular\FileManager\FileManagerServiceProvider');
+        $this->connection = $installableConfig->getConnection('file_assets');
+        $this->table = $installableConfig->getName('file_assets');
+        $this->timestamps = $installableConfig->getTimestamp('file_assets');
     }
 
     public static function boot() {
         parent::boot();
-
-        static::saving(function(FileManager $fileManager){
+        static::saving(static function (FileManager $fileManager) {
             $fileManager->attributes['exist'] = $fileManager->fileExists();
         });
     }
 
     public function fileExists(): bool {
         return Storage::disk($this->attributes['disk'])
-               ->exists($this->attributes['path'] . DIRECTORY_SEPARATOR . $this->attributes['name']);
+                      ->exists($this->attributes['path'] . DIRECTORY_SEPARATOR . $this->attributes['name']);
     }
 
-
     public function getUrlAttribute() {
-        if(!$this->attributes['exist']) {
+        if (!$this->attributes['exist']) {
             return;
         }
 

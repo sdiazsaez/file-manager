@@ -43,6 +43,7 @@ class CreateFilesTable extends Migration {
             if ($this->installableConfig->getTimestamp('file_assets')) {
                 $table->timestamps();
             }
+            $table->softDeletes();
         });
     }
 
