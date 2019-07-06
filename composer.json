@@ -14,8 +14,7 @@
         "larangular/support": "0.1.*",
         "larangular/routing-controller": "0.1.*",
         "larangular/migration-package": "0.1.*",
-        "larangular/installable": "0.1.*",
-        "intervention/image": "^2.4"
+        "larangular/installable": "0.1.*"
     },
     "autoload": {
         "psr-4": {
