@@ -27,7 +27,7 @@ class FileManagerController {
             'name' => $file->hashName(),
             'original_name' => $file->getClientOriginalName(),
             'extension' => $file->extension(),
-            'type' => $file->getClientMimeType(),
+            'type' => $file->getMimeType(),
             'size' => $file->getSize(),
         ];
     }
