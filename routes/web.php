@@ -9,4 +9,5 @@ Route::group([
     //Route::get('/{id}', 'FileManager\Gateway@show');
     Route::get('/file/{fileManager}/{name}', 'FileManager\Gateway@showFile');
     Route::resource('/file', 'FileManager\Gateway');
+    Route::resource('file-relationship', 'FileRelationship\Gateway');
 });

@@ -11,6 +11,8 @@ use Larangular\Installable\{Contracts\HasInstallable,
     Contracts\Installable,
     Installer\Installer};
 
+use Larangular\FileManager\Http\Controllers\FileManager\FileManagerController;
+
 
 class FileManagerServiceProvider extends ServiceProvider implements HasInstallable {
 
@@ -22,21 +24,20 @@ class FileManagerServiceProvider extends ServiceProvider implements HasInstallab
      */
     public function boot() {
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+
         $this->declareMigrationGlobal();
         $this->declareMigrationFileAssets();
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
-        $this->commands(FileManager::class);
+        $this->declareMigrationFileRelationships();
     }
 
     public function register() {
         $this->mergeConfigFrom(__DIR__ . '/../config/file-manager.php', 'file-manager');
-
-        $this->app->singleton('FileManagerController', function(){
-            return new Http\Controllers\FileManager\FileManagerController();
+        $this->app->singleton('FileManagerController', static function(){
+            return new FileManagerController();
         });
     }
 
-    public function provides() {
+    public function provides(): array {
         return ['FileManagerController'];
     }
 
@@ -59,10 +60,17 @@ class FileManagerServiceProvider extends ServiceProvider implements HasInstallab
         ]);
     }
 
-    private function declareMigrationFileAssets() {
+    private function declareMigrationFileAssets(): void {
         $this->declareMigration([
             'name'      => 'file_assets',
             'timestamp' => true,
+        ]);
+    }
+
+    private function declareMigrationFileRelationships(): void {
+        $this->declareMigration([
+            'name'      => 'file_relationship',
+            'timestamp' => false,
         ]);
     }
 }
