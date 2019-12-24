@@ -10,9 +10,10 @@ use Larangular\Installable\Facades\InstallableConfig;
 use Larangular\RoutingController\Model as RoutingModel;
 use Illuminate\Support\Facades\Storage;
 use Larangular\FileManager\Facades\FileManagerController;
+use Jedrzej\Searchable\SearchableTrait;
 
 class FileManager extends Model {
-    use SoftDeletes, RoutingModel;
+    use SoftDeletes, RoutingModel, SearchableTrait;
 
     protected $table;
     protected $fillable = [
