@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\UploadedFile;
 use Larangular\Installable\Facades\InstallableConfig;
-use Larangular\RoutingController\Model as RoutingModel;
+use Larangular\RoutingController\CachableModel as RoutingModel;
 use Illuminate\Support\Facades\Storage;
 use Larangular\FileManager\Facades\FileManagerController;
 use Jedrzej\Searchable\SearchableTrait;
@@ -15,6 +15,7 @@ use Jedrzej\Searchable\SearchableTrait;
 class FileManager extends Model {
     use SoftDeletes, RoutingModel, SearchableTrait;
 
+    public $searchable = ['*'];
     protected $table;
     protected $fillable = [
         'disk',
