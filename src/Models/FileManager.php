@@ -2,22 +2,20 @@
 
 namespace Larangular\FileManager\Models;
 
-use Faker\Provider\File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Jedrzej\Searchable\SearchableTrait;
 use Larangular\Installable\Facades\InstallableConfig;
 use Larangular\RoutingController\CachableModel as RoutingModel;
-use Illuminate\Support\Facades\Storage;
-use Larangular\FileManager\Facades\FileManagerController;
-use Jedrzej\Searchable\SearchableTrait;
 
 class FileManager extends Model {
     use SoftDeletes, RoutingModel, SearchableTrait;
 
-    public $searchable = ['*'];
+    public    $searchable = ['*'];
     protected $table;
-    protected $fillable = [
+    protected $fillable   = [
         'disk',
         'path',
         'name',
@@ -49,7 +47,7 @@ class FileManager extends Model {
 
     public function fileExists(): bool {
         return Storage::disk($this->attributes['disk'])
-                      ->exists($this->attributes['path'] . DIRECTORY_SEPARATOR . $this->attributes['name']);
+                      ->exists($this->pathInDisk());
     }
 
     public function getUrlAttribute() {
@@ -57,8 +55,19 @@ class FileManager extends Model {
             return;
         }
 
-        return config('app.url') . config('file-manager.route_prefix') . '/file/' . $this->attributes['id'] . '/' . $this->attributes['original_name'];
-        //return Storage::disk($this->attributes['disk'])->get($this->attributes['path'] . DIRECTORY_SEPARATOR . $this->attributes['name']);
+        return Str::finish(config('file-manager.url'),
+                '/') . config('file-manager.route_prefix') . '/file/' . $this->attributes['id'] . '/' . $this->attributes['original_name'];
     }
 
+    public function fullPath() {
+        return Storage::disk($this->attributes['disk'])
+                      ->path($this->pathInDisk());
+    }
+
+    private function pathInDisk() {
+        $path = Str::finish($this->attributes['path'], DIRECTORY_SEPARATOR) . $this->attributes['name'];
+        return Str::startsWith($path, DIRECTORY_SEPARATOR)
+            ? Str::replaceFirst(DIRECTORY_SEPARATOR, '', $path)
+            : $path;
+    }
 }
