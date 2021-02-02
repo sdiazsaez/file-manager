@@ -43,6 +43,11 @@ class FileManager extends Model {
         static::saving(static function (FileManager $fileManager) {
             $fileManager->attributes['exist'] = $fileManager->fileExists();
         });
+
+        static::forceDeleted(static function (FileManager $fileManager) {
+            $fileManager->deleteFile();
+        });
+
     }
 
     public function fileExists(): bool {
@@ -59,12 +64,19 @@ class FileManager extends Model {
                 '/') . config('file-manager.route_prefix') . '/file/' . $this->attributes['id'] . '/' . $this->attributes['original_name'];
     }
 
-    public function fullPath() {
+    public function fullPath(): string {
         return Storage::disk($this->attributes['disk'])
                       ->path($this->pathInDisk());
     }
 
-    private function pathInDisk() {
+    protected function deleteFile(): void {
+        if ($this->fileExists()) {
+            Storage::disk($this->attributes['disk'])
+                   ->delete($this->pathInDisk());
+        }
+    }
+
+    protected function pathInDisk(): string {
         $path = Str::finish($this->attributes['path'], DIRECTORY_SEPARATOR) . $this->attributes['name'];
         return Str::startsWith($path, DIRECTORY_SEPARATOR)
             ? Str::replaceFirst(DIRECTORY_SEPARATOR, '', $path)
