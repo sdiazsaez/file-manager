@@ -55,6 +55,12 @@ class FileManager extends Model {
                       ->exists($this->pathInDisk());
     }
 
+    public function setOriginalNameAttribute(string $value): void {
+        $this->attributes['original_name'] = str_replace([
+            ' ', '$', '% ', '#', '<', '>', '|', '/'
+        ], '_', $value);
+    }
+
     public function getUrlAttribute() {
         if (!$this->attributes['exist']) {
             return;
