@@ -61,13 +61,15 @@ class FileManager extends Model {
         ], '_', $value);
     }
 
-    public function getUrlAttribute() {
+    public function getUrlAttribute(): ?string {
         if (!$this->attributes['exist']) {
-            return;
+            return null;
         }
 
-        return Str::finish(config('file-manager.url'),
-                '/') . config('file-manager.route_prefix') . '/file/' . $this->attributes['id'] . '/' . $this->attributes['original_name'];
+        return route('larangular.api.file-manager.show', [
+            'fileManager' => $this->attributes['id'],
+            'name'        => $this->attributes['original_name'],
+        ]);
     }
 
     public function fullPath(): string {

@@ -6,8 +6,7 @@ Route::group([
     'namespace'  => 'Larangular\FileManager\Http\Controllers',
     'as'         => 'larangular.api.file-manager.',
 ], function () {
-    //Route::get('/{id}', 'FileManager\Gateway@show');
-    Route::get('/file/{fileManager}/{name}', 'FileManager\Gateway@showFile');
+    Route::get('/file/{fileManager}/{name}', 'FileManager\Gateway@showFile')->name('show');
     Route::resource('/file', 'FileManager\Gateway');
     Route::resource('file-relationship', 'FileRelationship\Gateway');
 });
