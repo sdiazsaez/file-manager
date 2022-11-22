@@ -3,26 +3,24 @@
 namespace Larangular\FileManager;
 
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Larangular\FileManager\Commands\FileManager;
-use Larangular\Installable\Support\{InstallableServiceProvider as ServiceProvider, PublisableGroups, PublishableGroups};
-use Larangular\UFScraper\UFScraperServiceProvider;
-use Larangular\UnidadFomento\Commands\UnidadFomento;
-use Larangular\Installable\{Contracts\HasInstallable,
-    Contracts\Installable,
-    Installer\Installer};
-
 use Larangular\FileManager\Http\Controllers\FileManager\FileManagerController;
+use Larangular\Installable\{Contracts\HasInstallable, Contracts\Installable, Installer\Installer};
+use Larangular\Installable\Support\{InstallableServiceProvider as ServiceProvider, PublisableGroups};
 
 
 class FileManagerServiceProvider extends ServiceProvider implements HasInstallable {
 
     protected $defer = false;
+
     /**
      * Bootstrap the application services.
      *
      * @return void
      */
     public function boot() {
+        Relation::morphMap(['file_manager' => \Larangular\FileManager\Models\FileManager::class]);
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         $this->declareMigrationGlobal();
@@ -32,7 +30,7 @@ class FileManagerServiceProvider extends ServiceProvider implements HasInstallab
 
     public function register() {
         $this->mergeConfigFrom(__DIR__ . '/../config/file-manager.php', 'file-manager');
-        $this->app->singleton('FileManagerController', static function(){
+        $this->app->singleton('FileManagerController', static function () {
             return new FileManagerController();
         });
     }
@@ -55,8 +53,7 @@ class FileManagerServiceProvider extends ServiceProvider implements HasInstallab
             'seeds'        => [
                 'local_path' => __DIR__ . '/../database/seeds',
             ],
-            'seed_classes' => [
-            ],
+            'seed_classes' => [],
         ]);
     }
 
