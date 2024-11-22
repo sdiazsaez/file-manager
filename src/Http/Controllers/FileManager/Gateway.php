@@ -38,7 +38,20 @@ class Gateway extends Controller implements IGatewayModel {
         $filePath = $fileManager->path . DIRECTORY_SEPARATOR . $fileManager->name;
         $storage = Storage::disk($fileManager->disk)
                           ->path($filePath);
-        return response()->file($storage);
+
+        $mimeType = mime_content_type($storage);
+
+        switch ($fileManager->type) {
+            case 'image/svg':
+                $mimeType = 'image/svg+xml';
+                break;
+            default:
+                break;
+        }
+
+        return Response::file($storage, ['Content-Type' => $mimeType]);
+
+        //return response()->file($storage);
         //return Image::make()->response('png');
     }
 }
