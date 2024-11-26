@@ -2,6 +2,8 @@
 
 namespace Larangular\FileManager\Http\Controllers\FileManager;
 
+
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Larangular\FileManager\Facades\FileManagerController;
